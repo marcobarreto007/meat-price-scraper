@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.page_title }} - {{ t.app_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="/static/images/meat-icon.svg">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.5 9C19.5 9 21 10.5 21 13C21 15.5 19 17 17 17C15 17 14.5 15.5 13 15.5C11.5 15.5 11 17 9 17C7 17 4.5 15.5 4.5 12.5C4.5 9.5 7 7 9.5 7C12 7 13.5 8 14.5 8C15.5 8 17 7.5 17 6C17 4.5 16 3.5 14.5 3.5C13 3.5 12 4.5 12 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
+                </svg>
+                <span class="logo-text">{{ t.app_name }}</span>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="/" class="nav-link {% if page == 'home' %}active{% endif %}">{{ t.nav_home }}</a>
+                <a href="/products" class="nav-link {% if page == 'products' %}active{% endif %}">{{ t.nav_products }}</a>
+                <a href="/stores" class="nav-link {% if page == 'stores' %}active{% endif %}">{{ t.nav_stores }}</a>
+                <a href="/history" class="nav-link {% if page == 'history' %}active{% endif %}">{{ t.nav_history }}</a>
+            </nav>
+            
+            <div class="lang-switcher">
+                <button class="lang-btn {% if current_lang == 'en' %}active{% endif %}" data-lang="en">EN</button>
+                <button class="lang-btn {% if current_lang == 'fr' %}active{% endif %}" data-lang="fr">FR</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <p>&copy; 2025 {{ t.app_name }}. {{ t.footer_tagline }}</p>
+            <p class="footer-note">{{ t.footer_note }}</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

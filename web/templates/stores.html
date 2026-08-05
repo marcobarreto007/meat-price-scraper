@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="section-title">{{ t.stores_title }}</h1>
+    <p class="section-subtitle">{{ t.stores_subtitle }}</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Maxi</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Supermarkets across Quebec</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Costco</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Wholesale warehouse club</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Metro</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Grocery and pharmacy chain</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">IGA</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Independent grocery stores</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Walmart</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Big box retailer</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Provigo</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Quebec grocery chain</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Super C</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Discount grocery store</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Adonis</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Mediterranean specialty</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">Mayrand</h3>
+            <p style="color: #6b7280; margin-top: 0.5rem;">Local Quebec butcher</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; padding: 2rem; background: #fefce8; border-radius: 0.75rem; text-align: center;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #92400e; margin-bottom: 0.5rem;">
+            📍 All stores within 50km of Montreal
+        </h3>
+        <p style="color: #78350f;">
+            We track prices from all major grocery stores and butchers in the Greater Montreal area.
+        </p>
+    </div>
+</div>
+{% endblock %}
