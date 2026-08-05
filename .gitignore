@@ -1,9 +1,36 @@
+```gitignore
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+venv/
 .venv/
 .env
-cache/*.db
-cache/*.json
-*.egg-info/
+.env.local
+.env.*
+
+# Build artifacts
+build/
 dist/
-.pytest_cache/
+
+# Logs
+*.log
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+```

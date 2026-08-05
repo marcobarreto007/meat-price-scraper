@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="section-title">{{ t.products_title }}</h1>
+    <p class="section-subtitle">{{ t.products_subtitle }}</p>
+    
+    <div class="product-grid">
+        <div id="product-chicken_breast"></div>
+        <div id="product-picanha"></div>
+        <div id="product-filet_mignon"></div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn btn-primary btn-lg" onclick="window.MeatPriceTracker.loadProductsPage()">
+            <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23,4 23,10 17,10"/>
+                <path d="M20.49,15a9,9,0,1,1-2.12-9.36L23,10"/>
+            </svg>
+            {{ t.btn_refresh }}
+        </button>
+    </div>
+    
+    <p style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.875rem;">
+        {{ t.btn_last_updated }}: <span id="last-updated">-</span>
+    </p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    window.MeatPriceTracker.loadProductsPage();
+    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+});
+</script>
+{% endblock %}

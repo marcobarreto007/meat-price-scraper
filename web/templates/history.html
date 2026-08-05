@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="section-title">{{ t.history_title }}</h1>
+    <p class="section-subtitle">{{ t.history_subtitle }}</p>
+    
+    <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div class="form-group">
+                <label class="form-label" for="history-product">{{ t.history_select_product }}</label>
+                <select id="history-product" class="form-select">
+                    <option value="">Select...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="history-days">{{ t.history_select_days }}</label>
+                <select id="history-days" class="form-select">
+                    <option value="7">{{ t.days_7 }}</option>
+                    <option value="30" selected>{{ t.days_30 }}</option>
+                    <option value="90">{{ t.days_90 }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div id="history-results">
+        <div class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    window.MeatPriceTracker.loadHistoryPage();
+});
+</script>
+{% endblock %}
