@@ -3,21 +3,21 @@ import json
 PRODUCTS_SEED: list[dict] = [
     {
         "slug": "chicken_breast",
-        "name_pt": "Peito de Frango",
+        "name_en": "Chicken Breast",
         "aliases_json": json.dumps({
             "flipp": ["poitrine de poulet", "poitrine poulet"],
         }),
     },
     {
         "slug": "picanha",
-        "name_pt": "Picanha",
+        "name_en": "Picanha (Top Sirloin Cap)",
         "aliases_json": json.dumps({
             "flipp": ["picanha", "culotte de surlonge", "top sirloin cap"],
         }),
     },
     {
         "slug": "filet_mignon",
-        "name_pt": "File Mignon",
+        "name_en": "Filet Mignon",
         "aliases_json": json.dumps({
             "flipp": ["filet mignon boeuf", "filet de boeuf", "tenderloin boeuf"],
         }),
@@ -27,7 +27,7 @@ PRODUCTS_SEED: list[dict] = [
 STORES_SEED: list[dict] = [
     {
         "id": "flipp",
-        "name": "Flipp (Todas as Lojas)",
+        "name": "Flipp (All Stores)",
         "base_url": "https://flipp.com",
         "scraper_type": "api",
         "active": True,
@@ -43,8 +43,8 @@ def get_aliases(product_slug: str, store_id: str) -> list[str]:
     return []
 
 
-def get_product_name_pt(slug: str) -> str:
+def get_product_name_en(slug: str) -> str:
     for p in PRODUCTS_SEED:
         if p["slug"] == slug:
-            return p["name_pt"]
+            return p["name_en"]
     return slug

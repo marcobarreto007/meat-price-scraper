@@ -15,7 +15,7 @@ class AbstractScraper(ABC):
 
     @abstractmethod
     async def search_product(self, product_slug: str, search_terms: list[str]) -> list[Price]:
-        """Busca um produto e retorna lista de precos encontrados."""
+        """Search for a product and return list of prices found."""
 
     async def scrape(self, product_slug: str, search_terms: list[str]) -> list[Price]:
         start = time.monotonic()
@@ -37,7 +37,7 @@ class AbstractScraper(ABC):
 
         elapsed = (time.monotonic() - start) * 1000
         logger.error("%s: all retries failed: %s", self.store_id, last_error)
-        return []  # Retorna vazio, nao lanca excecao (partial results)
+        return []  # Return empty on failure, don't raise (partial results)
 
     async def run(self, product_slug: str, search_terms: list[str]) -> ScrapeResult:
         start = time.monotonic()

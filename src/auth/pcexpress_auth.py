@@ -84,7 +84,7 @@ async def refresh_access_token(refresh_token: str) -> dict:
 
 
 async def get_access_token() -> str:
-    """Retorna um access token valido para PC Express API."""
+    """Return a valid access token for the PC Express API."""
     refresh_token = get_token("maxi")
     if not refresh_token:
         raise RuntimeError(

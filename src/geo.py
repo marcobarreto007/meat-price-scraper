@@ -128,7 +128,7 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def geocode(postal_code: str) -> tuple[float, float] | None:
-    """Converte postal code canadense em (lat, lon)."""
+    """Convert Canadian postal code to (lat, lon)."""
     clean = postal_code.upper().replace(" ", "")
     # Exact match
     if clean in MONTREAL_COORDS:

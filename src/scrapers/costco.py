@@ -1,11 +1,11 @@
 """
-Costco Same-Day scraper via Playwright com interceptacao de GraphQL.
+Costco Same-Day scraper via Playwright with GraphQL interception.
 
-Abordagem:
-1. Abre sameday.costco.com, clica "Browse as a guest"
-2. Navega para search URL
-3. Intercepta as respostas GraphQL do tipo "Items" que contem precos
-4. Extrai dados limpos: nome, preco, tamanho, preco por unidade
+Approach:
+1. Open sameday.costco.com, click "Browse as a guest"
+2. Navigate to search URL
+3. Intercept GraphQL "Items" responses containing prices
+4. Extract clean data: name, price, size, unit price
 """
 
 import logging
@@ -19,21 +19,21 @@ from src.scrapers.base import AbstractScraper
 
 logger = logging.getLogger(__name__)
 
-# Termos de busca especificos por produto
+# Product-specific search terms
 PRODUCT_SEARCH_TERMS: dict[str, list[str]] = {
     "chicken_breast": ["chicken breast", "poitrine de poulet"],
     "picanha": ["picanha", "top sirloin cap", "sirloin cap", "couvre-filet"],
     "filet_mignon": ["beef tenderloin", "filet mignon"],
 }
 
-# Palavras-chave para filtrar resultados relevantes por produto
+# Keywords to filter relevant results per product
 PRODUCT_FILTERS: dict[str, list[str]] = {
     "chicken_breast": ["chicken breast", "poitrine", "chicken breast"],
     "picanha": ["picanha", "sirloin cap", "couvre-filet", "top sirloin"],
     "filet_mignon": ["tenderloin", "filet mignon", "filet de"],
 }
 
-# Palavras para excluir (falsos positivos)
+# Exclusion words (false positives)
 EXCLUDE_WORDS: dict[str, list[str]] = {
     "chicken_breast": ["crab", "tuna", "salmon", "seafood", "sausage", "noodle", "soup", "dog", "party wings", "thigh"],
 }
@@ -86,9 +86,9 @@ class CostcoScraper(AbstractScraper):
                     await guest.click()
                     await page.wait_for_timeout(3000)
                 except Exception:
-                    pass  # Ja pode estar logado como guest
+                    pass  # May already be in guest mode
 
-                # Busca cada termo
+                # Search each term
                 for term in search_terms[:2]:
                     url = f"https://sameday.costco.com/store/costco/search?q={term.replace(' ', '+')}"
                     try:
@@ -109,7 +109,7 @@ class CostcoScraper(AbstractScraper):
             if price_info:
                 results.append(price_info)
 
-        # Deduplica e ordena
+        # Deduplicate and sort
         seen = set()
         unique: list[Price] = []
         for p in sorted(results, key=lambda x: x.unit_price or x.price_cad):
@@ -126,17 +126,17 @@ def _extract_price_from_item(item: dict, product_slug: str, filters: list[str]) 
     if not name:
         return None
 
-    # Filtra por relevancia ao produto buscado
+    # Filter by relevance to searched product
     name_lower = name.lower()
     if filters and not any(f.lower() in name_lower for f in filters):
         return None
 
-    # Exclui falsos positivos
+    # Exclude false positives
     excludes = EXCLUDE_WORDS.get(product_slug, [])
     if excludes and any(e.lower() in name_lower for e in excludes):
         return None
 
-    # Extrai preco do JSON aninhado (caminho: viewSection → price → ...)
+    # Extract price from nested JSON (path: viewSection → price → ...)
     price_str = _deep_find(item, "priceString")
     if not price_str or not isinstance(price_str, str):
         return None
@@ -147,17 +147,17 @@ def _extract_price_from_item(item: dict, product_slug: str, filters: list[str]) 
 
     size = item.get("size", "")
 
-    # Preco por unidade (ex: "$X.XX / lb")
+    # Unit price (e.g. "$X.XX / lb")
     unit_price = None
     per_unit_str = _deep_find(item, "pricePerUnitString")
     if per_unit_str and isinstance(per_unit_str, str):
         unit_price = _parse_price_per_unit(per_unit_str)
 
-    # Se nao tem pricePerUnitString, estima do tamanho
+    # If no pricePerUnitString, estimate from size
     if unit_price is None and size:
         unit_price = _calc_unit_price(price_cad, size)
 
-    # Detecta promocao
+    # Detect sale/discount
     is_on_sale = False
     original_price = None
     full_price_str = _deep_find(item, "fullPriceString")
@@ -187,7 +187,7 @@ def _extract_price_from_item(item: dict, product_slug: str, filters: list[str]) 
 
 
 def _deep_find(obj, key: str) -> object:
-    """Busca recursiva por uma chave no JSON aninhado."""
+    """Recursively search for a key in nested JSON."""
     if isinstance(obj, dict):
         if key in obj:
             return obj[key]
@@ -204,7 +204,7 @@ def _deep_find(obj, key: str) -> object:
 
 
 def _parse_dollar(val: str) -> float | None:
-    """Converte string de preco para float: '$31.18' -> 31.18"""
+    """Convert price string to float: '$31.18' -> 31.18"""
     if not val:
         return None
     match = re.search(r'\$?([\d,]+\.?\d*)', str(val).replace(",", ""))
@@ -214,7 +214,7 @@ def _parse_dollar(val: str) -> float | None:
 
 
 def _parse_price_per_unit(val: str) -> float | None:
-    """Converte '$10.20 / lb' ou 'About $3.73 each' para CAD/kg."""
+    """Convert '$10.20 / lb' or 'About $3.73 each' to CAD/kg."""
     if not val:
         return None
     val_lower = val.lower()
@@ -225,7 +225,7 @@ def _parse_price_per_unit(val: str) -> float | None:
     if "lb" in val_lower:
         return price / 0.453592  # lb → kg
     if "each" in val_lower or "ea" in val_lower or "ct" in val_lower:
-        return None  # Preco por unidade, nao por peso — nao podemos converter
+        return None  # Per-unit price, not by weight — cannot convert
     if "kg" in val_lower:
         return price
     return None

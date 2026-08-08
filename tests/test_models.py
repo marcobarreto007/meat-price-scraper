@@ -98,7 +98,7 @@ class TestStoreBranch:
 
 class TestProduct:
     def test_create(self):
-        p = Product(slug="picanha", name_pt="Picanha")
+        p = Product(slug="picanha", name_en="Picanha")
         assert p.slug == "picanha"
-        assert p.name_pt == "Picanha"
+        assert p.name_en == "Picanha"
         assert p.aliases == {}

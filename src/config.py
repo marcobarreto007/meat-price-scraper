@@ -30,4 +30,4 @@ INSTACART_GRAPHQL = f"{INSTACART_BASE}/graphql"
 MAX_RETRIES = 3
 TIMEOUT_SECONDS = 30
 CIRCUIT_BREAKER_THRESHOLD = 5
-CACHE_TTL_HOURS = 6  # Quanto tempo o cache de preco e considerado fresco
+CACHE_TTL_HOURS = 6  # How long cached prices are considered fresh

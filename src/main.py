@@ -1,10 +1,10 @@
 """
-Comparador de Precos de Carne - Montreal 50km
+Meat Price Scraper - Montreal 50km Radius
 
-Usa a API publica do Flipp (backflipp.wishabi.com) para buscar
-ofertas de carne em TODAS as lojas do Quebec de uma vez.
+Uses the Flipp public API (backflipp.wishabi.com) to fetch
+meat deals from ALL Quebec stores in a single batch.
 
-Uso:
+Usage:
     python -m src.main scrape
     python -m src.main scrape --products picanha,filet_mignon --output json
     python -m src.main history --product picanha --days 30
@@ -38,7 +38,7 @@ async def cmd_scrape(args: argparse.Namespace) -> None:
     await seed_stores(db, STORES_SEED)
 
     if args.output != "json":
-        print(f"Buscando {len(products)} produtos nas lojas do Quebec...\n")
+        print(f"Fetching {len(products)} products from Quebec stores...\n")
 
     flipp = FlippScraper()
     tasks = []
@@ -112,18 +112,18 @@ async def cmd_history(args: argparse.Namespace) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Comparador de Precos de Carne - Montreal 50km",
+        description="Meat Price Comparison - Montreal 50km Radius",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     sub = parser.add_subparsers(dest="command")
 
-    p_scrape = sub.add_parser("scrape", help="Buscar precos em todas as lojas")
-    p_scrape.add_argument("--products", help="Produtos (ex: picanha,filet_mignon)")
+    p_scrape = sub.add_parser("scrape", help="Fetch prices from all stores")
+    p_scrape.add_argument("--products", help="Products (e.g. picanha,filet_mignon)")
     p_scrape.add_argument("--output", choices=["table", "json"], default="table")
     p_scrape.add_argument("--verbose", action="store_true")
 
-    p_hist = sub.add_parser("history", help="Historico de precos")
-    p_hist.add_argument("--product", required=True, help="Slug do produto")
+    p_hist = sub.add_parser("history", help="Price history")
+    p_hist.add_argument("--product", required=True, help="Product slug")
     p_hist.add_argument("--days", type=int, default=30)
 
     args = parser.parse_args()

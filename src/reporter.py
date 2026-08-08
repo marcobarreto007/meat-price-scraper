@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.table import Table
 
 from src.models import Price, ScrapeResult
-from src.products import get_product_name_pt
+from src.products import get_product_name_en
 
 console = Console()
 
@@ -26,16 +26,16 @@ def print_results_json(results: list[ScrapeResult]) -> None:
     for r in results:
         for p in r.prices:
             output.append({
-                "produto": p.product_slug,
-                "nome_produto": p.product_name,
-                "loja": r.store_name,
-                "filial": p.branch_name,
-                "preco_cad": p.price_cad,
-                "preco_kg": p.unit_price,
-                "tamanho": p.package_size,
-                "marca": p.brand,
-                "oferta": p.is_on_sale,
-                "preco_original": p.original_price,
+                "product": p.product_slug,
+                "product_name": p.product_name,
+                "store": r.store_name,
+                "branch": p.branch_name,
+                "price_cad": p.price_cad,
+                "price_kg": p.unit_price,
+                "package_size": p.package_size,
+                "brand": p.brand,
+                "on_sale": p.is_on_sale,
+                "original_price": p.original_price,
                 "url": p.url,
             })
     json.dump(output, sys.stdout, indent=2, ensure_ascii=False)
@@ -47,7 +47,7 @@ def print_results_table(results: list[ScrapeResult]) -> None:
     products_found: set[str] = {p.product_slug for p in all_prices}
 
     if not all_prices:
-        console.print("\n[red]Nenhum resultado encontrado.[/red]\n")
+        console.print("\n[red]No results found.[/red]\n")
         return
 
     now = datetime.now(timezone.utc).astimezone()
@@ -57,15 +57,15 @@ def print_results_table(results: list[ScrapeResult]) -> None:
         if slug not in products_found:
             continue
 
-        name_pt = get_product_name_pt(slug)
-        console.print(f"\n[bold yellow]  {name_pt}[/bold yellow]")
+        name_en = get_product_name_en(slug)
+        console.print(f"\n[bold yellow]  {name_en}[/bold yellow]")
 
         table = Table(show_header=True, header_style="bold cyan")
-        table.add_column("Pos", style="dim", width=4)
-        table.add_column("Loja / Produto", style="white")
-        table.add_column("Preco/kg", justify="right")
-        table.add_column("Preco", justify="right")
-        table.add_column("Oferta", justify="center", width=6)
+        table.add_column("Rank", style="dim", width=4)
+        table.add_column("Store / Product", style="white")
+        table.add_column("Price/kg", justify="right")
+        table.add_column("Price", justify="right")
+        table.add_column("Sale", justify="center", width=6)
 
         prices = sorted(
             [p for p in all_prices if p.product_slug == slug],
@@ -94,7 +94,7 @@ def print_results_table(results: list[ScrapeResult]) -> None:
             u_price = format_unit_price(p.unit_price)
             total = format_price(p.price_cad)
 
-            sale = "[green]SIM[/green]" if p.is_on_sale else ""
+            sale = "[green]YES[/green]" if p.is_on_sale else ""
 
             table.add_row(medal, f"{store_display}\n[dim]{product_display}[/dim]", u_price, total, sale)
 
@@ -102,12 +102,12 @@ def print_results_table(results: list[ScrapeResult]) -> None:
 
     # Summary line
     console.print()
-    console.print(f"[dim]Atualizado: {now.strftime('%d/%m/%Y %H:%M')} {tz_name}[/dim]")
+    console.print(f"[dim]Updated: {now.strftime('%Y-%m-%d %H:%M')} {tz_name}[/dim]")
 
     # Errors
     errors = [r for r in results if r.error]
     if errors:
-        console.print("\n[red]Lojas com erro:[/red]")
+        console.print("\n[red]Stores with errors:[/red]")
         for r in errors:
             console.print(f"  [red]{r.store_name}:[/red] {r.error}")
 
@@ -116,16 +116,16 @@ def print_results_table(results: list[ScrapeResult]) -> None:
 
 def print_history_table(prices: list[dict], days: int) -> None:
     if not prices:
-        console.print("[red]Nenhum historico encontrado.[/red]")
+        console.print("[red]No history found.[/red]")
         return
 
     table = Table(header_style="bold cyan")
-    table.add_column("Data")
-    table.add_column("Loja")
-    table.add_column("Produto")
-    table.add_column("Preco/kg", justify="right")
-    table.add_column("Preco", justify="right")
-    table.add_column("Oferta")
+    table.add_column("Date")
+    table.add_column("Store")
+    table.add_column("Product")
+    table.add_column("Price/kg", justify="right")
+    table.add_column("Price", justify="right")
+    table.add_column("Sale")
 
     for p in prices[:50]:
         scraped = p.get("scraped_at", "")[:16]
@@ -133,20 +133,20 @@ def print_history_table(prices: list[dict], days: int) -> None:
         name = p.get("product_name", "")[:40]
         up = format_unit_price(p.get("unit_price"))
         total = format_price(p.get("price_cad", 0))
-        sale = "[green]SIM[/green]" if p.get("is_on_sale") else ""
+        sale = "[green]YES[/green]" if p.get("is_on_sale") else ""
 
         table.add_row(scraped, store, name, up, total, sale)
 
     console.print(table)
-    console.print(f"[dim]{len(prices)} registros (ultimos {days} dias)[/dim]")
+    console.print(f"[dim]{len(prices)} records (last {days} days)[/dim]")
 
 
 def print_stores_list(branches: list[dict]) -> None:
     table = Table(header_style="bold cyan")
-    table.add_column("Loja")
-    table.add_column("Filial")
-    table.add_column("Endereco")
-    table.add_column("Distancia", justify="right")
+    table.add_column("Store")
+    table.add_column("Branch")
+    table.add_column("Address")
+    table.add_column("Distance", justify="right")
 
     for b in branches:
         store = b.get("store_id", "")

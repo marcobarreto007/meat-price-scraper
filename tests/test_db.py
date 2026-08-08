@@ -27,8 +27,8 @@ async def db():
 
 
 PRODUCTS = [
-    {"slug": "picanha", "name_pt": "Picanha", "aliases_json": '{"flipp": ["picanha"]}'},
-    {"slug": "chicken_breast", "name_pt": "Peito de Frango", "aliases_json": '{"flipp": ["poitrine de poulet"]}'},
+    {"slug": "picanha", "name_en": "Picanha", "aliases_json": '{"flipp": ["picanha"]}'},
+    {"slug": "chicken_breast", "name_en": "Chicken Breast", "aliases_json": '{"flipp": ["poitrine de poulet"]}'},
 ]
 
 STORES = [
@@ -50,7 +50,7 @@ async def test_init_db(db):
 @pytest.mark.asyncio
 async def test_seed_products(db):
     await seed_products(db, PRODUCTS)
-    cursor = await db.execute("SELECT slug, name_pt FROM products ORDER BY slug")
+    cursor = await db.execute("SELECT slug, name_en FROM products ORDER BY slug")
     rows = await cursor.fetchall()
     assert len(rows) == 2
     assert rows[0]["slug"] == "chicken_breast"

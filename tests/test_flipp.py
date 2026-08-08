@@ -207,7 +207,7 @@ class TestFlippScraper:
     async def test_search_product_returns_results(self):
         scraper = FlippScraper()
         assert scraper.store_id == "flipp"
-        assert scraper.store_name == "Flipp (Todas as Lojas)"
+        assert scraper.store_name == "Flipp (All Stores)"
 
     def test_search_terms_completeness(self):
         assert "chicken_breast" in SEARCH_TERMS

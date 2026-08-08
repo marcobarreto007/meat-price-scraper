@@ -1,8 +1,8 @@
 """
-Flipp Scraper via API publica backflipp.wishabi.com.
+Flipp Scraper via the public backflipp.wishabi.com API.
 
-Agrega flyers de TODAS as lojas em uma unica chamada HTTP.
-Sem auth, sem rate-limit conhecido, resposta JSON limpa.
+Aggregates flyers from ALL stores in a single HTTP call.
+No auth, no known rate-limit, clean JSON response.
 """
 
 import logging
@@ -20,13 +20,13 @@ FLIPP_API = "https://backflipp.wishabi.com/flipp/items/search"
 LOCALE = "fr-ca"
 POSTAL_CODE = "H2T1S8"
 
-# Lojas que queremos nos resultados (filtro por nome)
+# Target store names to filter results
 TARGET_MERCHANTS = [
     "maxi", "super c", "metro", "iga", "walmart", "costco",
     "mayrand", "adonis", "provigo", "supermarche",
 ]
 
-# Termos de busca por produto em frances (Flipp Quebec)
+# French search terms for Quebec Flipp flyers
 SEARCH_TERMS: dict[str, list[str]] = {
     "chicken_breast": [
         "poitrine de poulet",
@@ -47,7 +47,7 @@ SEARCH_TERMS: dict[str, list[str]] = {
 
 class FlippScraper(AbstractScraper):
     store_id = "flipp"
-    store_name = "Flipp (Todas as Lojas)"
+    store_name = "Flipp (All Stores)"
 
     async def search_product(self, product_slug: str, search_terms: list[str]) -> list[Price]:
         results: list[Price] = []
@@ -57,7 +57,7 @@ class FlippScraper(AbstractScraper):
                 prices = await self._search_term(session, product_slug, term)
                 results.extend(prices)
 
-        # Deduplica por (loja, produto, preco)
+        # Deduplicate by (store, product, price)
         seen = set()
         unique: list[Price] = []
         for p in sorted(results, key=lambda x: x.unit_price or x.price_cad):
@@ -109,7 +109,7 @@ def _parse_flipp_item(item: dict, product_slug: str) -> Price | None:
 
     merchant = item.get("merchant_name", "Inconnu")
 
-    # Extrai o preco
+    # Extract price
     price_str = item.get("current_price")
     price_cad: float | None = None
 
@@ -119,7 +119,7 @@ def _parse_flipp_item(item: dict, product_slug: str) -> Price | None:
         except (ValueError, TypeError):
             pass
 
-    # Se nao tem preco numerico, tenta o sale_story
+    # If no numeric price, try the sale_story text
     sale_story = item.get("sale_story", "")
     if price_cad is None and sale_story:
         # Ex: "2 pour 10$", "5$ chaque"
@@ -130,7 +130,7 @@ def _parse_flipp_item(item: dict, product_slug: str) -> Price | None:
     if price_cad is None or price_cad <= 0:
         return None
 
-    # Preco por unidade
+    # Unit price
     post_text = (item.get("post_price_text") or "").lower()
     pre_text = (item.get("pre_price_text") or "").lower()
     unit_price = _parse_unit_price(price_cad, post_text, name)
@@ -149,7 +149,7 @@ def _parse_flipp_item(item: dict, product_slug: str) -> Price | None:
     valid_from = str(item.get("valid_from", ""))[:10]
     valid_to = str(item.get("valid_to", ""))[:10]
 
-    # Tamanho extraido do nome (ex: "POITRINES DE POULET, 3 un.")
+    # Size extracted from product name (e.g. "CHICKEN BREAST, 3 un.")
     package_size = _extract_size(name)
 
     # URL do flyer
@@ -172,15 +172,15 @@ def _parse_flipp_item(item: dict, product_slug: str) -> Price | None:
 
 
 def _parse_unit_price(price: float, post_text: str, name: str) -> float | None:
-    """Converte preco para CAD/kg baseado no post_price_text."""
+    """Convert price to CAD/kg based on post_price_text."""
     if not post_text:
         return None
 
-    # "/lb" ou "lb" → converter para /kg
+    # "/lb" or "lb" → convert to /kg
     if "/lb" in post_text or re.search(r'\blb\b', post_text):
         return price / 0.453592
 
-    # "le 100 g" ou "/100g" → converter para /kg
+    # "le 100 g" or "/100g" → convert to /kg
     if "100 g" in post_text or "/100g" in post_text:
         return price * 10
 
@@ -192,7 +192,7 @@ def _parse_unit_price(price: float, post_text: str, name: str) -> float | None:
 
 
 def _extract_size(name: str) -> str | None:
-    """Extrai tamanho do nome do produto (ex: 'POITRINES DE POULET, 3 un.' → '3 un.')."""
+    """Extract package size from product name (e.g. 'CHICKEN BREAST, 3 un.' → '3 un.')."""
     # Peso: "500 g", "1.5 kg", "2 lb"
     match = re.search(r'(\d+\.?\d*\s*(g|kg|lb|lbs))', name, re.IGNORECASE)
     if match:

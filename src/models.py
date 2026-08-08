@@ -28,7 +28,7 @@ class StoreBranch:
 @dataclass
 class Product:
     slug: str
-    name_pt: str
+    name_en: str
     aliases: dict[str, list[str]] = field(default_factory=dict)
     id: Optional[int] = None
 

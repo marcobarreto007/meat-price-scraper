@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS store_branches (
 CREATE TABLE IF NOT EXISTS products (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     slug        TEXT UNIQUE NOT NULL,
-    name_pt     TEXT NOT NULL,
+    name_en     TEXT NOT NULL,
     aliases_json TEXT NOT NULL
 );
 
@@ -83,8 +83,8 @@ async def init_db(db: aiosqlite.Connection) -> None:
 async def seed_products(db: aiosqlite.Connection, products: list[dict]) -> None:
     for p in products:
         await db.execute(
-            "INSERT OR IGNORE INTO products (slug, name_pt, aliases_json) VALUES (?, ?, ?)",
-            (p["slug"], p["name_pt"], p["aliases_json"]),
+            "INSERT OR IGNORE INTO products (slug, name_en, aliases_json) VALUES (?, ?, ?)",
+            (p["slug"], p["name_en"], p["aliases_json"]),
         )
     await db.commit()
 
@@ -208,7 +208,7 @@ async def get_price_history(
 
 
 async def get_circuit_breaker_status(db: aiosqlite.Connection) -> dict[str, bool]:
-    """Retorna stores que estao com circuit breaker ativo (5+ falhas consecutivas)."""
+    """Return stores with active circuit breaker (5+ consecutive failures)."""
     cursor = await db.execute("SELECT id, active FROM stores")
     rows = await cursor.fetchall()
     return {r["id"]: bool(r["active"]) for r in rows}

@@ -36,7 +36,7 @@ class MaxiScraper(AbstractScraper):
         }
 
     async def discover_stores(self) -> list[dict]:
-        """Descobre lojas Maxi num raio de 50km do centro."""
+        """Discover Maxi stores within 50km radius of center."""
         headers = await self._get_headers()
         stores = []
 
@@ -82,11 +82,11 @@ class MaxiScraper(AbstractScraper):
         results: list[Price] = []
 
         async with aiohttp.ClientSession() as session:
-            for term in search_terms[:3]:  # Max 3 termos por busca
+            for term in search_terms[:3]:  # Max 3 terms per search
                 prices = await self._search_single(session, headers, product_slug, term)
                 results.extend(prices)
 
-        # Deduplica e ordena por unit_price
+        # Deduplicate and sort by unit_price
         seen = set()
         unique: list[Price] = []
         for p in sorted(results, key=lambda x: x.unit_price or x.price_cad):
@@ -210,7 +210,7 @@ class MaxiScraper(AbstractScraper):
 
 
 def _estimate_unit_price(price: float, package_size: str) -> float | None:
-    """Estima preco por kg a partir do package size string (ex: '~700 g')."""
+    """Estimate price per kg from package size string (e.g. '~700 g')."""
     import re
 
     size_clean = package_size.lower().replace(",", ".").replace("~", "").strip()
