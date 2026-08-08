@@ -71,15 +71,14 @@ if STATIC_DIR.exists():
 # Helper functions
 def get_lang_from_request(request: Request) -> LangCode:
     """Extract language preference from request (cookie, header, or default)."""
-    lang_cookie = request.cookies.get("lang", "en")
-    accept_lang = request.headers.get("accept-language", "en")
-    
-    if lang_cookie in ["en", "fr"]:
+    lang_cookie = request.cookies.get("lang")
+    if lang_cookie in ("en", "fr"):
         return lang_cookie
-    
+
+    accept_lang = request.headers.get("accept-language", "")
     if "fr" in accept_lang.lower():
         return "fr"
-    
+
     return "en"
 
 
@@ -91,9 +90,9 @@ async def home_page(request: Request):
     t = get_translation(lang)
     
     return templates.TemplateResponse(
-        "home.html",
-        {
-            "request": request,
+        request=request,
+        name="home.html",
+        context={
             "t": t,
             "current_lang": lang,
             "page": "home",
@@ -109,9 +108,9 @@ async def products_page(request: Request):
     product_names = get_product_names(lang)
     
     return templates.TemplateResponse(
-        "products.html",
-        {
-            "request": request,
+        request=request,
+        name="products.html",
+        context={
             "t": t,
             "current_lang": lang,
             "page": "products",
@@ -127,9 +126,9 @@ async def stores_page(request: Request):
     t = get_translation(lang)
     
     return templates.TemplateResponse(
-        "stores.html",
-        {
-            "request": request,
+        request=request,
+        name="stores.html",
+        context={
             "t": t,
             "current_lang": lang,
             "page": "stores",
@@ -145,9 +144,9 @@ async def history_page(request: Request):
     product_names = get_product_names(lang)
     
     return templates.TemplateResponse(
-        "history.html",
-        {
-            "request": request,
+        request=request,
+        name="history.html",
+        context={
             "t": t,
             "current_lang": lang,
             "page": "history",
