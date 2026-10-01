@@ -1,4 +1,3 @@
-```gitignore
 # Python
 __pycache__/
 *.pyc
@@ -7,13 +6,21 @@ __pycache__/
 .Python
 venv/
 .venv/
+
+# Environment — keep the template, ignore the real file
 .env
 .env.local
 .env.*
+!.env.example
 
-# Build artifacts
+# Packaging
+*.egg-info/
 build/
 dist/
+
+# Runtime cache (regenerated on first run)
+cache/
+*.db
 
 # Logs
 *.log
@@ -33,4 +40,3 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
-```
